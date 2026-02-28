@@ -48,10 +48,7 @@
     padding: 48px 24px 80px;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 48px;
-  }
+  header { text-align: center; margin-bottom: 48px; }
 
   .badge {
     display: inline-block;
@@ -78,11 +75,7 @@
     margin-bottom: 12px;
   }
 
-  .subtitle {
-    color: var(--muted);
-    font-size: 15px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+  .subtitle { color: var(--muted); font-size: 15px; font-family: 'JetBrains Mono', monospace; }
 
   .panel {
     background: var(--card);
@@ -201,7 +194,7 @@
     align-items: flex-start;
     gap: 14px;
     animation: slideIn .3s ease;
-    transition: border-color .4s;
+    transition: border-color .4s, background .4s;
   }
 
   .job-item.success { border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.04); }
@@ -213,8 +206,7 @@
   }
 
   .job-num {
-    min-width: 32px;
-    height: 32px;
+    min-width: 32px; height: 32px;
     background: rgba(124,58,237,.2);
     border: 1px solid rgba(124,58,237,.3);
     border-radius: 8px;
@@ -260,12 +252,7 @@
     font-weight: 500;
   }
 
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .dot.waiting { background: var(--warn); box-shadow: 0 0 6px var(--warn); animation: pulse 1.5s infinite; }
   .dot.success { background: var(--success); box-shadow: 0 0 6px var(--success); }
   .dot.fail    { background: var(--error); box-shadow: 0 0 6px var(--error); }
@@ -284,7 +271,8 @@
     opacity: .6;
   }
 
-  .result-link {
+  /* Download button — now a real <button> for blob download */
+  .btn-download {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -294,14 +282,22 @@
     border: 1px solid rgba(16,185,129,.35);
     border-radius: 8px;
     color: var(--success);
-    text-decoration: none;
     font-size: 13px;
     font-family: 'Syne', sans-serif;
     font-weight: 700;
+    cursor: pointer;
     transition: all .2s;
   }
 
-  .result-link:hover { background: rgba(16,185,129,.28); transform: translateY(-1px); }
+  .btn-download:hover { background: rgba(16,185,129,.28); transform: translateY(-1px); }
+  .btn-download:disabled { opacity: .5; cursor: wait; transform: none; }
+
+  .dl-progress {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--warn);
+    margin-top: 6px;
+  }
 
   .error-msg {
     font-size: 11px;
@@ -329,12 +325,6 @@
   .stat.s-running span { color: var(--warn); }
   .stat.s-fail span    { color: var(--error); }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
   .section-title {
     font-size: 14px;
     font-weight: 700;
@@ -342,6 +332,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 16px;
   }
 
   .section-title::before {
@@ -384,15 +375,13 @@
     <textarea id="urlInput" placeholder="วิดีโอแมวน่ารัก | https://sora.chatgpt.com/p/s_abc123...&#10;ทะเลสีฟ้า | https://sora.chatgpt.com/p/s_def456...&#10;https://sora.chatgpt.com/p/s_ghi789...  ← ไม่ใส่ชื่อก็ได้"></textarea>
     <p class="hint">
       // ใส่ชื่อโดยคั่นด้วย <code> | </code> เช่น <code>ทะเลสีฟ้า | https://sora.chatgpt.com/...</code><br>
-      // ถ้าไม่ใส่ชื่อ จะใช้ "คลิป #1", "คลิป #2" แทน · ชื่อจะใช้เป็นชื่อไฟล์ตอนดาวน์โหลดด้วย
+      // ถ้าไม่ใส่ชื่อ จะใช้ "คลิป #1", "คลิป #2" แทน · ชื่อไฟล์จะตรงกับชื่อที่ตั้งไว้แน่นอน
     </p>
     <button class="btn-primary" id="startBtn" onclick="startBatch()">⚡ เริ่มลบลายน้ำทั้งหมด</button>
   </div>
 
   <div id="jobs-section">
-    <div class="section-header">
-      <div class="section-title">ผลลัพธ์</div>
-    </div>
+    <div class="section-title">ผลลัพธ์</div>
     <div class="stats-bar">
       <div class="stat">ทั้งหมด: <span id="st-total">0</span></div>
       <div class="stat s-done">✓ สำเร็จ: <span id="st-done">0</span></div>
@@ -498,6 +487,7 @@
         job.state = 'success';
         let resultUrl = null;
         try { resultUrl = JSON.parse(t.resultJson).resultUrls?.[0] || null; } catch {}
+        job.resultUrl = resultUrl;
         job.el.className = 'job-item success';
         fillEl(job.el, idx, job.url, job.name, 'success', job.taskId, resultUrl, null);
       } else if (t.state === 'fail') {
@@ -508,6 +498,42 @@
     } catch {}
   }
 
+  // ── Blob download so filename is always correct ──────────────────
+  async function downloadBlob(btn, resultUrl, name) {
+    btn.disabled = true;
+    btn.textContent = '⟳ กำลังโหลด...';
+
+    // Show progress element
+    const progressEl = btn.nextElementSibling;
+    if (progressEl) progressEl.style.display = 'block';
+
+    try {
+      const res = await fetch(resultUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = sanitize(name) + '.mp4';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+
+      btn.textContent = '✓ ดาวน์โหลดแล้ว';
+      if (progressEl) progressEl.style.display = 'none';
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = '▼ ดาวน์โหลด · ' + name + '.mp4';
+      if (progressEl) { progressEl.textContent = '⚠ โหลดไม่สำเร็จ: ' + e.message; }
+    }
+  }
+
+  function sanitize(name) {
+    return name.replace(/[\/\\:*?"<>|]/g, '').trim() || 'video';
+  }
+
   function makeEl(idx, url, name, state, taskId, resultUrl, errMsg) {
     const el = document.createElement('div');
     el.className = 'job-item';
@@ -516,9 +542,13 @@
   }
 
   function fillEl(el, idx, url, name, state, taskId, resultUrl, errMsg) {
-    const labels = { queued: 'รอสร้าง task...', waiting: 'กำลังประมวลผล...', success: 'สำเร็จ!', fail: 'ล้มเหลว' };
+    const labels = {
+      queued: 'รอสร้าง task...',
+      waiting: 'กำลังประมวลผล...',
+      success: 'สำเร็จ!',
+      fail: 'ล้มเหลว'
+    };
     const dotCls = state === 'queued' ? 'queued' : state;
-    const safeName = name.replace(/[\/\\:*?"<>|]/g, '').trim() || `clip_${idx}`;
 
     el.innerHTML = `
       <div class="job-num">${String(idx).padStart(2,'0')}</div>
@@ -531,14 +561,22 @@
         </div>
         ${taskId  ? `<div class="task-id">task id: ${taskId}</div>` : ''}
         ${errMsg  ? `<div class="error-msg">⚠ ${esc(errMsg)}</div>` : ''}
-        ${resultUrl ? `<a class="result-link" href="${resultUrl}" download="${esc(safeName)}.mp4" target="_blank">
+        ${resultUrl ? `
+          <button class="btn-download" onclick="downloadBlob(this, '${esc(resultUrl)}', '${esc(name)}')">
             ▼ ดาวน์โหลด · ${esc(name)}.mp4
-          </a>` : ''}
+          </button>
+          <div class="dl-progress" style="display:none;">⟳ กำลังดึงไฟล์...</div>
+        ` : ''}
       </div>`;
   }
 
   function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
   }
 
   function updateStats() {
