@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sora Watermark Remover</title>
+<title>Sora AI Tools · kie.ai</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -32,169 +32,202 @@
 
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 50% at 20% -20%, rgba(124,58,237,.15) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6,182,212,.1) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -20%, rgba(124,58,237,.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6,182,212,.1) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
   }
 
   .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
+    position: relative; z-index: 1;
+    max-width: 960px; margin: 0 auto;
+    padding: 48px 24px 100px;
   }
 
+  /* ── Header ── */
   header { text-align: center; margin-bottom: 48px; }
 
   .badge {
     display: inline-block;
     background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(6,182,212,.2));
     border: 1px solid rgba(124,58,237,.4);
-    border-radius: 99px;
-    padding: 4px 14px;
+    border-radius: 99px; padding: 4px 14px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: .08em;
-    color: var(--accent2);
+    font-size: 11px; letter-spacing: .08em; color: var(--accent2);
     margin-bottom: 16px;
   }
 
   h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 800;
-    letter-spacing: -.02em;
-    line-height: 1.1;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800; letter-spacing: -.02em; line-height: 1.1;
     background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 12px;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 12px;
   }
 
-  .subtitle { color: var(--muted); font-size: 15px; font-family: 'JetBrains Mono', monospace; }
+  .subtitle { color: var(--muted); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
 
-  .panel {
-    background: var(--card);
+  /* ── Tab switcher ── */
+  .tabs {
+    display: flex; gap: 8px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 20px;
+    border-radius: 14px; padding: 6px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1; padding: 11px 8px;
+    background: transparent; border: none; border-radius: 10px;
+    color: var(--muted); font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all .2s; text-align: center;
+  }
+
+  .tab:hover { color: var(--text); background: rgba(255,255,255,.04); }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent), #9333ea);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(124,58,237,.4);
+  }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; margin-bottom: 20px;
   }
 
   .panel-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
   }
 
   .panel-title::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
     box-shadow: 0 0 8px var(--accent);
   }
 
-  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  /* ── Inputs ── */
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 7px; }
 
-  input[type="text"], textarea {
+  input[type="text"], textarea, select {
     width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    transition: border-color .2s;
-    resize: vertical;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    color: var(--text); font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; outline: none; transition: border-color .2s;
   }
 
-  input[type="text"]:focus, textarea:focus {
+  input[type="text"]:focus, textarea:focus, select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(124,58,237,.15);
   }
 
-  input[type="text"]::placeholder, textarea::placeholder { color: var(--muted); opacity: .7; }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .6; }
 
-  textarea { min-height: 180px; line-height: 1.7; }
+  textarea { resize: vertical; line-height: 1.6; }
+  select { cursor: pointer; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .mt { margin-top: 16px; }
 
   .hint {
-    font-size: 11px;
-    color: var(--muted);
+    font-size: 11px; color: var(--muted);
     font-family: 'JetBrains Mono', monospace;
-    margin-top: 8px;
-    line-height: 1.8;
+    margin-top: 7px; line-height: 1.7;
   }
 
   .hint code {
-    background: rgba(124,58,237,.15);
-    border: 1px solid rgba(124,58,237,.25);
-    border-radius: 4px;
-    padding: 1px 6px;
-    color: var(--accent2);
+    background: rgba(124,58,237,.15); border: 1px solid rgba(124,58,237,.25);
+    border-radius: 4px; padding: 1px 6px; color: var(--accent2);
   }
 
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  /* ── Image upload area ── */
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: 12px;
+    padding: 28px 20px; text-align: center; cursor: pointer;
+    transition: all .2s; position: relative; overflow: hidden;
+  }
 
-  select {
-    width: 100%;
-    background: var(--surface);
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(124,58,237,.05); }
+
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .upload-icon { font-size: 32px; margin-bottom: 10px; }
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text span { color: var(--accent2); font-weight: 700; }
+
+  .preview-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+  .preview-item {
+    position: relative; width: 80px; height: 80px;
+    border-radius: 8px; overflow: hidden;
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
   }
 
+  .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+
+  .preview-item .rm {
+    position: absolute; top: 2px; right: 2px;
+    background: rgba(0,0,0,.7); border: none; border-radius: 50%;
+    width: 18px; height: 18px; color: #fff; font-size: 11px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Action button ── */
   .btn-primary {
-    width: 100%;
-    padding: 16px;
+    width: 100%; padding: 15px;
     background: linear-gradient(135deg, var(--accent), #9333ea);
-    border: none;
-    border-radius: 12px;
-    color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    cursor: pointer;
-    transition: all .2s;
-    box-shadow: 0 4px 20px rgba(124,58,237,.3);
-    margin-top: 12px;
+    border: none; border-radius: 12px; color: #fff;
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    letter-spacing: .04em; cursor: pointer; transition: all .2s;
+    box-shadow: 0 4px 20px rgba(124,58,237,.3); margin-top: 20px;
   }
 
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(124,58,237,.45); }
   .btn-primary:active { transform: translateY(0); }
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-  #jobs-section { display: none; }
+  /* ── Results ── */
+  #results-section { display: none; }
+
+  .section-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  }
+
+  .section-title::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--success); border-radius: 50%;
+    box-shadow: 0 0 8px var(--success);
+  }
+
+  .stats-bar {
+    display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    padding: 12px 18px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+  }
+
+  .stat { color: var(--muted); }
+  .stat span { font-weight: 700; color: var(--text); }
+  .stat.s-done span { color: var(--success); }
+  .stat.s-run span  { color: var(--warn); }
+  .stat.s-fail span { color: var(--error); }
 
   .job-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    animation: slideIn .3s ease;
-    transition: border-color .4s, background .4s;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 12px;
+    display: flex; align-items: flex-start; gap: 14px;
+    animation: slideIn .3s ease; transition: border-color .4s, background .4s;
   }
 
   .job-item.success { border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.04); }
@@ -207,49 +240,28 @@
 
   .job-num {
     min-width: 32px; height: 32px;
-    background: rgba(124,58,237,.2);
-    border: 1px solid rgba(124,58,237,.3);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent2);
-    font-weight: 700;
-    flex-shrink: 0;
-    margin-top: 2px;
+    background: rgba(124,58,237,.2); border: 1px solid rgba(124,58,237,.3);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    color: var(--accent2); font-weight: 700; flex-shrink: 0; margin-top: 2px;
   }
 
   .job-info { flex: 1; min-width: 0; }
 
   .job-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 15px; font-weight: 700; color: var(--text);
+    margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  .job-url {
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 8px;
+  .job-sub {
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; margin-bottom: 8px;
   }
 
   .job-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 500;
   }
 
   .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -258,103 +270,71 @@
   .dot.fail    { background: var(--error); box-shadow: 0 0 6px var(--error); }
   .dot.queued  { background: var(--muted); }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: .35; }
-  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
 
-  .task-id {
-    font-size: 10px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 5px;
-    opacity: .6;
-  }
+  .task-id { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 5px; opacity: .6; }
+  .error-msg { font-size: 11px; color: var(--error); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
 
-  /* Download button — now a real <button> for blob download */
   .btn-download {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-top: 10px;
-    padding: 8px 14px;
-    background: rgba(16,185,129,.15);
-    border: 1px solid rgba(16,185,129,.35);
-    border-radius: 8px;
-    color: var(--success);
-    font-size: 13px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-top: 10px; padding: 8px 14px;
+    background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.35);
+    border-radius: 8px; color: var(--success);
+    font-size: 13px; font-family: 'Syne', sans-serif; font-weight: 700;
+    cursor: pointer; transition: all .2s;
   }
 
   .btn-download:hover { background: rgba(16,185,129,.28); transform: translateY(-1px); }
   .btn-download:disabled { opacity: .5; cursor: wait; transform: none; }
 
-  .dl-progress {
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--warn);
-    margin-top: 6px;
+  .dl-progress { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--warn); margin-top: 6px; }
+
+  /* ── Tab content visibility ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Toggle (remove_watermark) ── */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
   }
 
-  .error-msg {
-    font-size: 11px;
-    color: var(--error);
-    margin-top: 6px;
-    font-family: 'JetBrains Mono', monospace;
+  .toggle-label { font-size: 13px; color: var(--muted); }
+
+  .toggle {
+    position: relative; width: 44px; height: 24px;
   }
 
-  .stats-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 12px 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute; inset: 0; background: var(--border);
+    border-radius: 99px; cursor: pointer; transition: .3s;
   }
 
-  .stat { color: var(--muted); }
-  .stat span { font-weight: 700; color: var(--text); }
-  .stat.s-done span    { color: var(--success); }
-  .stat.s-running span { color: var(--warn); }
-  .stat.s-fail span    { color: var(--error); }
-
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
+  .slider::before {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; left: 3px; bottom: 3px;
+    background: #fff; border-radius: 50%; transition: .3s;
   }
 
-  .section-title::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--success);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--success);
-  }
+  input:checked + .slider { background: var(--success); }
+  input:checked + .slider::before { transform: translateX(20px); }
 </style>
 </head>
 <body>
 <div class="wrap">
+
   <header>
-    <div class="badge">kie.ai · sora-watermark-remover</div>
-    <h1>Batch Watermark<br>Remover</h1>
-    <p class="subtitle">// ลบลายน้ำ Sora หลายลิงก์พร้อมกัน</p>
+    <div class="badge">kie.ai · Sora 2 Tools</div>
+    <h1>Sora AI Toolkit</h1>
+    <p class="subtitle">// Watermark Remover · Text to Video · Image to Video</p>
   </header>
 
+  <!-- ── API Key (shared) ── -->
   <div class="panel">
-    <div class="panel-title">ตั้งค่า</div>
-    <div class="row">
+    <div class="panel-title">ตั้งค่า API</div>
+    <div class="grid2">
       <div>
         <label>API Key</label>
         <input type="text" id="apiKey" placeholder="Bearer token จาก kie.ai" />
@@ -369,223 +349,470 @@
     </div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">ใส่ลิงก์ Sora</div>
-    <label>รูปแบบ: <code style="font-family:JetBrains Mono,monospace;font-size:12px;background:rgba(124,58,237,.15);padding:2px 8px;border-radius:4px;color:#06b6d4;">ชื่อคลิป | URL</code> — บรรทัดละ 1 รายการ</label>
-    <textarea id="urlInput" placeholder="วิดีโอแมวน่ารัก | https://sora.chatgpt.com/p/s_abc123...&#10;ทะเลสีฟ้า | https://sora.chatgpt.com/p/s_def456...&#10;https://sora.chatgpt.com/p/s_ghi789...  ← ไม่ใส่ชื่อก็ได้"></textarea>
-    <p class="hint">
-      // ใส่ชื่อโดยคั่นด้วย <code> | </code> เช่น <code>ทะเลสีฟ้า | https://sora.chatgpt.com/...</code><br>
-      // ถ้าไม่ใส่ชื่อ จะใช้ "คลิป #1", "คลิป #2" แทน · ชื่อไฟล์จะตรงกับชื่อที่ตั้งไว้แน่นอน
-    </p>
-    <button class="btn-primary" id="startBtn" onclick="startBatch()">⚡ เริ่มลบลายน้ำทั้งหมด</button>
+  <!-- ── Tab switcher ── -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('remove')">🧹 Watermark Remover</button>
+    <button class="tab" onclick="switchTab('txt2vid')">✍️ Text to Video</button>
+    <button class="tab" onclick="switchTab('img2vid')">🖼️ Image to Video</button>
   </div>
 
-  <div id="jobs-section">
+  <!-- ══════════════════════════════════════
+       TAB 1: Watermark Remover
+  ══════════════════════════════════════ -->
+  <div class="tab-content active" id="tab-remove">
+    <div class="panel">
+      <div class="panel-title">ใส่ลิงก์ Sora</div>
+      <label>รูปแบบ: <code style="font-family:JetBrains Mono,monospace;font-size:12px;background:rgba(124,58,237,.15);padding:2px 8px;border-radius:4px;color:#06b6d4;">ชื่อคลิป | URL</code> — บรรทัดละ 1 รายการ</label>
+      <textarea id="removeUrls" rows="7" placeholder="วิดีโอแมวน่ารัก | https://sora.chatgpt.com/p/s_abc123...&#10;ทะเลสีฟ้า | https://sora.chatgpt.com/p/s_def456...&#10;https://sora.chatgpt.com/p/s_ghi789...  ← ไม่ใส่ชื่อก็ได้"></textarea>
+      <p class="hint">// ถ้าไม่ใส่ชื่อ จะใช้ "คลิป #1", "คลิป #2" · ชื่อจะใช้เป็นชื่อไฟล์ตอนดาวน์โหลด</p>
+      <button class="btn-primary" onclick="startRemove()">⚡ เริ่มลบลายน้ำทั้งหมด</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB 2: Text to Video
+  ══════════════════════════════════════ -->
+  <div class="tab-content" id="tab-txt2vid">
+    <div class="panel">
+      <div class="panel-title">Text to Video</div>
+
+      <label>ชื่อคลิป (สำหรับไฟล์ download)</label>
+      <input type="text" id="t2v-name" placeholder="เช่น วิดีโอแมว" class="mt" style="margin-top:0;margin-bottom:16px;" />
+
+      <label>Prompt (บรรยายวิดีโอที่ต้องการ)</label>
+      <textarea id="t2v-prompt" rows="5" placeholder="A cinematic shot of a golden retriever running on the beach at sunset..."></textarea>
+
+      <div class="grid3 mt">
+        <div>
+          <label>Aspect Ratio</label>
+          <select id="t2v-aspect">
+            <option value="landscape">Landscape (16:9)</option>
+            <option value="portrait">Portrait (9:16)</option>
+          </select>
+        </div>
+        <div>
+          <label>Duration</label>
+          <select id="t2v-frames">
+            <option value="10">10 วินาที</option>
+            <option value="15">15 วินาที</option>
+          </select>
+        </div>
+        <div>
+          <label>Resolution</label>
+          <select id="t2v-res">
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toggle-row mt">
+        <span class="toggle-label">ลบ Watermark อัตโนมัติ</span>
+        <label class="toggle">
+          <input type="checkbox" id="t2v-nowm" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="btn-primary" onclick="startTxt2Vid()">🎬 สร้างวิดีโอ</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB 3: Image to Video
+  ══════════════════════════════════════ -->
+  <div class="tab-content" id="tab-img2vid">
+    <div class="panel">
+      <div class="panel-title">Image to Video</div>
+
+      <label>ชื่อคลิป (สำหรับไฟล์ download)</label>
+      <input type="text" id="i2v-name" placeholder="เช่น ทะเลสีฟ้า" style="margin-bottom:16px;" />
+
+      <label>อัปโหลดรูปภาพ (JPEG / PNG / WebP · max 10MB)</label>
+      <div class="upload-zone" id="dropzone"
+           ondragover="event.preventDefault(); this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)">
+        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple onchange="handleFiles(this.files)" />
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">ลากวางรูปที่นี่ หรือ <span>คลิกเพื่อเลือก</span></div>
+      </div>
+      <div class="preview-grid" id="previewGrid"></div>
+
+      <label class="mt" style="display:block;margin-top:16px;">Prompt (บรรยายการเคลื่อนไหว)</label>
+      <textarea id="i2v-prompt" rows="4" placeholder="The ocean waves gently crash, the sky transitions from blue to golden sunset..."></textarea>
+
+      <div class="grid2 mt">
+        <div>
+          <label>Aspect Ratio</label>
+          <select id="i2v-aspect">
+            <option value="landscape">Landscape (16:9)</option>
+            <option value="portrait">Portrait (9:16)</option>
+          </select>
+        </div>
+        <div>
+          <label>Duration</label>
+          <select id="i2v-frames">
+            <option value="10">10 วินาที</option>
+            <option value="15">15 วินาที</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toggle-row mt">
+        <span class="toggle-label">ลบ Watermark อัตโนมัติ</span>
+        <label class="toggle">
+          <input type="checkbox" id="i2v-nowm" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="btn-primary" onclick="startImg2Vid()">🎬 สร้างวิดีโอจากรูป</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Results (shared)
+  ══════════════════════════════════════ -->
+  <div id="results-section">
     <div class="section-title">ผลลัพธ์</div>
     <div class="stats-bar">
       <div class="stat">ทั้งหมด: <span id="st-total">0</span></div>
       <div class="stat s-done">✓ สำเร็จ: <span id="st-done">0</span></div>
-      <div class="stat s-running">⟳ กำลังประมวล: <span id="st-running">0</span></div>
+      <div class="stat s-run">⟳ กำลังประมวล: <span id="st-run">0</span></div>
       <div class="stat s-fail">✕ ล้มเหลว: <span id="st-fail">0</span></div>
     </div>
     <div id="jobs-list"></div>
   </div>
+
 </div>
 
 <script>
-  const jobs = {};
-  let pollInterval = null;
+// ── Globals ─────────────────────────────────────────────────────────
+const jobs = {};
+let pollInterval = null;
+let uploadedFiles = []; // base64 data URLs for image upload
 
-  function parseLines() {
-    return document.getElementById('urlInput').value
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.length > 0)
-      .map((line, idx) => {
-        const pipe = line.indexOf('|');
-        if (pipe > -1) {
-          const name = line.slice(0, pipe).trim();
-          const url  = line.slice(pipe + 1).trim();
-          return { name: name || `คลิป #${idx + 1}`, url };
-        }
-        return { name: `คลิป #${idx + 1}`, url: line };
-      });
-  }
+// ── Tab switch ───────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
 
-  async function startBatch() {
-    const apiKey       = document.getElementById('apiKey').value.trim();
-    const uploadMethod = document.getElementById('uploadMethod').value;
-    const entries      = parseLines();
+// ── Helpers ──────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-    if (!apiKey)         return alert('กรุณากรอก API Key ก่อน');
-    if (!entries.length) return alert('กรุณากรอกลิงก์อย่างน้อย 1 รายการ');
+function sanitize(name) {
+  return name.replace(/[\/\\:*?"<>|]/g,'').trim() || 'video';
+}
 
-    document.getElementById('startBtn').disabled = true;
-    document.getElementById('jobs-section').style.display = 'block';
-    document.getElementById('jobs-list').innerHTML = '';
-    Object.keys(jobs).forEach(k => delete jobs[k]);
+function getApiKey() { return document.getElementById('apiKey').value.trim(); }
+function getUpload()  { return document.getElementById('uploadMethod').value; }
 
-    await Promise.allSettled(
-      entries.map((e, i) => createTask(apiKey, e.url, e.name, uploadMethod, i + 1))
+function resetJobs() {
+  Object.keys(jobs).forEach(k => delete jobs[k]);
+  document.getElementById('jobs-list').innerHTML = '';
+  document.getElementById('results-section').style.display = 'block';
+  updateStats();
+}
+
+// ── Image upload ─────────────────────────────────────────────────────
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      uploadedFiles.push({ dataUrl: reader.result, name: file.name, file });
+      renderPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPreviews() {
+  const grid = document.getElementById('previewGrid');
+  grid.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="preview-item">
+      <img src="${f.dataUrl}" />
+      <button class="rm" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderPreviews();
+}
+
+// Upload image to kie.ai and get public URL
+async function uploadImageToCloud(file, apiKey) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch('https://api.kie.ai/api/v1/files/upload', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + apiKey },
+    body: formData
+  });
+  const data = await res.json();
+  if (data.code === 200 && data.data?.url) return data.data.url;
+  // fallback: use base64 data URL if upload fails
+  throw new Error(data.msg || 'อัปโหลดรูปไม่สำเร็จ');
+}
+
+// ── ① Watermark Remover ──────────────────────────────────────────────
+function parseRemoveLines() {
+  return document.getElementById('removeUrls').value
+    .split('\n').map(l => l.trim()).filter(l => l)
+    .map((line, idx) => {
+      const pipe = line.indexOf('|');
+      if (pipe > -1) {
+        const name = line.slice(0, pipe).trim();
+        const url  = line.slice(pipe + 1).trim();
+        return { name: name || `คลิป #${idx + 1}`, url };
+      }
+      return { name: `คลิป #${idx + 1}`, url: line };
+    });
+}
+
+async function startRemove() {
+  const apiKey = getApiKey();
+  const entries = parseRemoveLines();
+  if (!apiKey)         return alert('กรุณากรอก API Key ก่อน');
+  if (!entries.length) return alert('กรุณากรอกลิงก์อย่างน้อย 1 รายการ');
+
+  resetJobs();
+  if (pollInterval) clearInterval(pollInterval);
+
+  await Promise.allSettled(entries.map((e, i) =>
+    submitJob(apiKey, {
+      model: 'sora-watermark-remover',
+      input: { video_url: e.url, upload_method: getUpload() }
+    }, e.name, `🧹 ${e.url}`, i + 1)
+  ));
+
+  updateStats();
+  pollInterval = setInterval(() => pollAll(apiKey), 4000);
+}
+
+// ── ② Text to Video ───────────────────────────────────────────────────
+async function startTxt2Vid() {
+  const apiKey  = getApiKey();
+  const prompt  = document.getElementById('t2v-prompt').value.trim();
+  const name    = document.getElementById('t2v-name').value.trim() || 'Text-to-Video';
+  const noWm    = document.getElementById('t2v-nowm').checked;
+
+  if (!apiKey)  return alert('กรุณากรอก API Key ก่อน');
+  if (!prompt)  return alert('กรุณาใส่ Prompt ก่อน');
+
+  resetJobs();
+  if (pollInterval) clearInterval(pollInterval);
+
+  await submitJob(apiKey, {
+    model: 'sora-2',
+    input: {
+      prompt,
+      aspect_ratio: document.getElementById('t2v-aspect').value,
+      n_frames: document.getElementById('t2v-frames').value,
+      resolution: document.getElementById('t2v-res').value,
+      remove_watermark: noWm,
+      upload_method: getUpload()
+    }
+  }, name, `✍️ ${prompt.slice(0, 80)}…`, 1);
+
+  updateStats();
+  pollInterval = setInterval(() => pollAll(apiKey), 4000);
+}
+
+// ── ③ Image to Video ─────────────────────────────────────────────────
+async function startImg2Vid() {
+  const apiKey = getApiKey();
+  const prompt = document.getElementById('i2v-prompt').value.trim();
+  const name   = document.getElementById('i2v-name').value.trim() || 'Image-to-Video';
+  const noWm   = document.getElementById('i2v-nowm').checked;
+
+  if (!apiKey)              return alert('กรุณากรอก API Key ก่อน');
+  if (!uploadedFiles.length) return alert('กรุณาอัปโหลดรูปภาพก่อน');
+  if (!prompt)              return alert('กรุณาใส่ Prompt ก่อน');
+
+  resetJobs();
+  if (pollInterval) clearInterval(pollInterval);
+
+  // Show uploading state
+  const el = makeEl(1, name, '🖼️ กำลังอัปโหลดรูป...', 'queued', null, null, null);
+  document.getElementById('jobs-list').appendChild(el);
+  jobs['job_1'] = { name, state: 'queued', el, taskId: null };
+
+  try {
+    // Upload all images and collect URLs
+    const imageUrls = await Promise.all(
+      uploadedFiles.map(f => uploadImageToCloud(f.file, apiKey))
     );
 
-    updateStats();
-    if (pollInterval) clearInterval(pollInterval);
-    pollInterval = setInterval(() => pollAll(apiKey), 4000);
-    document.getElementById('startBtn').disabled = false;
+    await submitJobWithEl(apiKey, {
+      model: 'sora-2-image-to-video',
+      input: {
+        prompt,
+        image_urls: imageUrls,
+        aspect_ratio: document.getElementById('i2v-aspect').value,
+        n_frames: document.getElementById('i2v-frames').value,
+        remove_watermark: noWm,
+        upload_method: getUpload()
+      }
+    }, name, `🖼️ ${prompt.slice(0, 80)}…`, 1, el);
+
+  } catch(e) {
+    jobs['job_1'].state = 'fail';
+    el.className = 'job-item fail';
+    fillEl(el, 1, name, `🖼️ ${prompt.slice(0,60)}`, 'fail', null, null, e.message);
   }
 
-  async function createTask(apiKey, url, name, uploadMethod, idx) {
-    const jobId = 'job_' + idx;
-    const el = makeEl(idx, url, name, 'queued', null, null, null);
-    document.getElementById('jobs-list').appendChild(el);
-    jobs[jobId] = { url, name, state: 'queued', el, taskId: null };
+  updateStats();
+  pollInterval = setInterval(() => pollAll(apiKey), 4000);
+}
 
-    try {
-      const res  = await fetch('https://api.kie.ai/api/v1/jobs/createTask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-        body: JSON.stringify({ model: 'sora-watermark-remover', input: { video_url: url, upload_method: uploadMethod } })
-      });
-      const data = await res.json();
+// ── Core job submit ──────────────────────────────────────────────────
+async function submitJob(apiKey, body, name, sub, idx) {
+  const el = makeEl(idx, name, sub, 'queued', null, null, null);
+  document.getElementById('jobs-list').appendChild(el);
+  const jobId = 'job_' + idx;
+  jobs[jobId] = { name, state: 'queued', el, taskId: null };
+  await submitJobWithEl(apiKey, body, name, sub, idx, el, jobId);
+}
 
-      if (data.code === 200 && data.data?.taskId) {
-        jobs[jobId].taskId = data.data.taskId;
-        jobs[jobId].state  = 'waiting';
-        fillEl(el, idx, url, name, 'waiting', data.data.taskId, null, null);
-      } else {
-        jobs[jobId].state = 'fail';
-        el.className = 'job-item fail';
-        fillEl(el, idx, url, name, 'fail', null, null, data.msg || 'สร้าง task ไม่สำเร็จ');
-      }
-    } catch (e) {
+async function submitJobWithEl(apiKey, body, name, sub, idx, el, jobId) {
+  jobId = jobId || 'job_' + idx;
+  if (!jobs[jobId]) jobs[jobId] = { name, state: 'queued', el, taskId: null };
+
+  try {
+    const res  = await fetch('https://api.kie.ai/api/v1/jobs/createTask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (data.code === 200 && data.data?.taskId) {
+      jobs[jobId].taskId = data.data.taskId;
+      jobs[jobId].state  = 'waiting';
+      fillEl(el, idx, name, sub, 'waiting', data.data.taskId, null, null);
+    } else {
       jobs[jobId].state = 'fail';
       el.className = 'job-item fail';
-      fillEl(el, idx, url, name, 'fail', null, null, e.message);
+      fillEl(el, idx, name, sub, 'fail', null, null, data.msg || 'สร้าง task ไม่สำเร็จ');
     }
+  } catch(e) {
+    jobs[jobId].state = 'fail';
+    el.className = 'job-item fail';
+    fillEl(el, idx, name, sub, 'fail', null, null, e.message);
   }
+}
 
-  async function pollAll(apiKey) {
-    const pending = Object.values(jobs).filter(j => j.state === 'waiting');
-    if (!pending.length) { clearInterval(pollInterval); return; }
-    await Promise.allSettled(pending.map(j => pollTask(apiKey, j)));
-    updateStats();
-  }
+// ── Polling ──────────────────────────────────────────────────────────
+async function pollAll(apiKey) {
+  const pending = Object.values(jobs).filter(j => j.state === 'waiting');
+  if (!pending.length) { clearInterval(pollInterval); return; }
+  await Promise.allSettled(pending.map(j => pollTask(apiKey, j)));
+  updateStats();
+}
 
-  async function pollTask(apiKey, job) {
-    try {
-      const res  = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${job.taskId}`, {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
-      });
-      const data = await res.json();
-      if (data.code !== 200 || !data.data) return;
+async function pollTask(apiKey, job) {
+  if (!job.taskId) return;
+  try {
+    const res  = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${job.taskId}`, {
+      headers: { 'Authorization': 'Bearer ' + apiKey }
+    });
+    const data = await res.json();
+    if (data.code !== 200 || !data.data) return;
 
-      const t   = data.data;
-      const idx = Object.values(jobs).indexOf(job) + 1;
+    const t   = data.data;
+    const idx = Object.values(jobs).indexOf(job) + 1;
+    const sub = job.sub || '';
 
-      if (t.state === 'success') {
-        job.state = 'success';
-        let resultUrl = null;
-        try { resultUrl = JSON.parse(t.resultJson).resultUrls?.[0] || null; } catch {}
-        job.resultUrl = resultUrl;
-        job.el.className = 'job-item success';
-        fillEl(job.el, idx, job.url, job.name, 'success', job.taskId, resultUrl, null);
-      } else if (t.state === 'fail') {
-        job.state = 'fail';
-        job.el.className = 'job-item fail';
-        fillEl(job.el, idx, job.url, job.name, 'fail', job.taskId, null, t.failMsg || 'ล้มเหลว');
-      }
-    } catch {}
-  }
-
-  // ── Blob download so filename is always correct ──────────────────
-  async function downloadBlob(btn, resultUrl, name) {
-    btn.disabled = true;
-    btn.textContent = '⟳ กำลังโหลด...';
-
-    // Show progress element
-    const progressEl = btn.nextElementSibling;
-    if (progressEl) progressEl.style.display = 'block';
-
-    try {
-      const res = await fetch(resultUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = sanitize(name) + '.mp4';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-
-      btn.textContent = '✓ ดาวน์โหลดแล้ว';
-      if (progressEl) progressEl.style.display = 'none';
-    } catch (e) {
-      btn.disabled = false;
-      btn.textContent = '▼ ดาวน์โหลด · ' + name + '.mp4';
-      if (progressEl) { progressEl.textContent = '⚠ โหลดไม่สำเร็จ: ' + e.message; }
+    if (t.state === 'success') {
+      job.state = 'success';
+      let resultUrl = null;
+      try { resultUrl = JSON.parse(t.resultJson).resultUrls?.[0] || null; } catch {}
+      job.el.className = 'job-item success';
+      fillEl(job.el, idx, job.name, sub, 'success', job.taskId, resultUrl, null);
+    } else if (t.state === 'fail') {
+      job.state = 'fail';
+      job.el.className = 'job-item fail';
+      fillEl(job.el, idx, job.name, sub, 'fail', job.taskId, null, t.failMsg || 'ล้มเหลว');
     }
-  }
+  } catch {}
+}
 
-  function sanitize(name) {
-    return name.replace(/[\/\\:*?"<>|]/g, '').trim() || 'video';
+// ── Blob download ─────────────────────────────────────────────────────
+async function downloadBlob(btn, url, name) {
+  btn.disabled = true;
+  btn.textContent = '⟳ กำลังโหลด...';
+  const prog = btn.nextElementSibling;
+  if (prog) prog.style.display = 'block';
+  try {
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const blob = await res.blob();
+    const bUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = bUrl; a.download = sanitize(name) + '.mp4';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(bUrl);
+    btn.textContent = '✓ ดาวน์โหลดแล้ว';
+    if (prog) prog.style.display = 'none';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '▼ ดาวน์โหลด · ' + name + '.mp4';
+    if (prog) { prog.textContent = '⚠ ' + e.message; }
   }
+}
 
-  function makeEl(idx, url, name, state, taskId, resultUrl, errMsg) {
-    const el = document.createElement('div');
-    el.className = 'job-item';
-    fillEl(el, idx, url, name, state, taskId, resultUrl, errMsg);
-    return el;
-  }
+// ── DOM helpers ───────────────────────────────────────────────────────
+function makeEl(idx, name, sub, state, taskId, resultUrl, errMsg) {
+  const el = document.createElement('div');
+  el.className = 'job-item';
+  fillEl(el, idx, name, sub, state, taskId, resultUrl, errMsg);
+  return el;
+}
 
-  function fillEl(el, idx, url, name, state, taskId, resultUrl, errMsg) {
-    const labels = {
-      queued: 'รอสร้าง task...',
-      waiting: 'กำลังประมวลผล...',
-      success: 'สำเร็จ!',
-      fail: 'ล้มเหลว'
-    };
-    const dotCls = state === 'queued' ? 'queued' : state;
+function fillEl(el, idx, name, sub, state, taskId, resultUrl, errMsg) {
+  const labels = { queued:'รอสร้าง task...', waiting:'กำลังประมวลผล...', success:'สำเร็จ!', fail:'ล้มเหลว' };
+  el.innerHTML = `
+    <div class="job-num">${String(idx).padStart(2,'0')}</div>
+    <div class="job-info">
+      <div class="job-name">${esc(name)}</div>
+      <div class="job-sub">${esc(sub)}</div>
+      <div class="job-status">
+        <span class="dot ${state === 'queued' ? 'queued' : state}"></span>
+        ${labels[state] || state}
+      </div>
+      ${taskId ? `<div class="task-id">task id: ${taskId}</div>` : ''}
+      ${errMsg ? `<div class="error-msg">⚠ ${esc(errMsg)}</div>` : ''}
+      ${resultUrl ? `
+        <button class="btn-download" onclick="downloadBlob(this,'${esc(resultUrl)}','${esc(name)}')">
+          ▼ ดาวน์โหลด · ${esc(name)}.mp4
+        </button>
+        <div class="dl-progress" style="display:none;">⟳ กำลังดึงไฟล์...</div>` : ''}
+    </div>`;
+}
 
-    el.innerHTML = `
-      <div class="job-num">${String(idx).padStart(2,'0')}</div>
-      <div class="job-info">
-        <div class="job-name">🎬 ${esc(name)}</div>
-        <div class="job-url" title="${esc(url)}">${esc(url)}</div>
-        <div class="job-status">
-          <span class="dot ${dotCls}"></span>
-          ${labels[state] || state}
-        </div>
-        ${taskId  ? `<div class="task-id">task id: ${taskId}</div>` : ''}
-        ${errMsg  ? `<div class="error-msg">⚠ ${esc(errMsg)}</div>` : ''}
-        ${resultUrl ? `
-          <button class="btn-download" onclick="downloadBlob(this, '${esc(resultUrl)}', '${esc(name)}')">
-            ▼ ดาวน์โหลด · ${esc(name)}.mp4
-          </button>
-          <div class="dl-progress" style="display:none;">⟳ กำลังดึงไฟล์...</div>
-        ` : ''}
-      </div>`;
-  }
-
-  function esc(s) {
-    return String(s)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;');
-  }
-
-  function updateStats() {
-    const all = Object.values(jobs);
-    document.getElementById('st-total').textContent   = all.length;
-    document.getElementById('st-done').textContent    = all.filter(j => j.state === 'success').length;
-    document.getElementById('st-running').textContent = all.filter(j => j.state === 'waiting' || j.state === 'queued').length;
-    document.getElementById('st-fail').textContent    = all.filter(j => j.state === 'fail').length;
-  }
+function updateStats() {
+  const all = Object.values(jobs);
+  document.getElementById('st-total').textContent = all.length;
+  document.getElementById('st-done').textContent  = all.filter(j=>j.state==='success').length;
+  document.getElementById('st-run').textContent   = all.filter(j=>j.state==='waiting'||j.state==='queued').length;
+  document.getElementById('st-fail').textContent  = all.filter(j=>j.state==='fail').length;
+}
 </script>
 </body>
 </html>
