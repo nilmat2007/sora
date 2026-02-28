@@ -382,7 +382,7 @@
       <label>Prompt (บรรยายวิดีโอที่ต้องการ)</label>
       <textarea id="t2v-prompt" rows="5" placeholder="A cinematic shot of a golden retriever running on the beach at sunset..."></textarea>
 
-      <div class="grid3 mt">
+
         <div>
           <label>Aspect Ratio</label>
           <select id="t2v-aspect">
@@ -397,14 +397,7 @@
             <option value="15">15 วินาที</option>
           </select>
         </div>
-        <div>
-          <label>Resolution</label>
-          <select id="t2v-res">
-            <option value="1080p">1080p</option>
-            <option value="720p">720p</option>
-            <option value="480p">480p</option>
-          </select>
-        </div>
+
       </div>
 
       <div class="toggle-row mt">
@@ -619,12 +612,11 @@ async function startTxt2Vid() {
   if (pollInterval) clearInterval(pollInterval);
 
   await submitJob(apiKey, {
-    model: 'sora-2',
+    model: 'sora-2-text-to-video',
     input: {
       prompt,
       aspect_ratio: document.getElementById('t2v-aspect').value,
       n_frames: document.getElementById('t2v-frames').value,
-      resolution: document.getElementById('t2v-res').value,
       remove_watermark: noWm,
       upload_method: getUpload()
     }
