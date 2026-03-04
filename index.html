@@ -563,6 +563,12 @@ async function uploadImageToCloud(file, apiKey) {
   throw new Error(data.msg || 'อัปโหลดรูปไม่สำเร็จ');
 }
 
+// ── Strip query string from Sora URLs ────────────────────────────────
+function cleanUrl(url) {
+  const q = url.indexOf('?');
+  return q > -1 ? url.slice(0, q) : url;
+}
+
 // ── ① Watermark Remover ──────────────────────────────────────────────
 function parseRemoveLines() {
   return document.getElementById('removeUrls').value
@@ -571,10 +577,10 @@ function parseRemoveLines() {
       const pipe = line.indexOf('|');
       if (pipe > -1) {
         const name = line.slice(0, pipe).trim();
-        const url  = line.slice(pipe + 1).trim();
+        const url  = cleanUrl(line.slice(pipe + 1).trim());
         return { name: name || `คลิป #${idx + 1}`, url };
       }
-      return { name: `คลิป #${idx + 1}`, url: line };
+      return { name: `คลิป #${idx + 1}`, url: cleanUrl(line) };
     });
 }
 
